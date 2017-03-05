@@ -7,7 +7,7 @@ const employeesCtrl = {
         res.send(emoloyees);
       })
       .catch((err) => {
-        res.status(500).send({ error: err.message });
+        res.status(500).send({ message: err.message });
       });
   },
 
@@ -17,20 +17,50 @@ const employeesCtrl = {
         res.send(employee);
       })
       .catch((err) => {
-        res.status(400).send({ error: err.message });
-      })
+        res.status(400).send({ message: err.message });
+      });
   },
 
   getOne(req, res) {
-    res.send('getOne: employees');
+    Employees.findOne({ number: req.params.id })
+      .then((employee) => {
+        if (employee) {
+          return res.send(employee);
+        }
+
+        res.status(404).send({ message: 'Employee not found.' });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
+      });
   },
 
   update(req, res) {
-    res.send('update: employees');
+    Employees.update({ number: req.params.id }, { $set: req.body })
+      .then((result) => {
+        if (result.n) {
+          return res.send({ message: 'Employee updated' });
+        }
+
+        res.status(404).send({ message: 'Employee not found.' });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
+      });
   },
 
   delete(req, res) {
-    res.send('delete: employees');
+    Employees.remove({ number: req.params.id })
+      .then((result) => {
+        if (result.result.n) {
+          return res.send({ message: 'Employee deleted' });
+        }
+
+        res.status(404).send({ message: 'Employee not found.' });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
+      });
   }
 };
 
