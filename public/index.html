@@ -67,7 +67,9 @@
             </tbody>
           </table>
 
-          <dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+          <div align="center">
+            <dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+          </div>
 
           <div align="center" id="employee-table-controls">
             <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{addshow&&formMode?'You are currently adding an employee.':addshow?'You are currently editing an employee.':''}}"> 
