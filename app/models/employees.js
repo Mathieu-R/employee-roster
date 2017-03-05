@@ -5,12 +5,22 @@ const Schema = mongoose.Schema;
 const employeeSchema = new Schema({
   number: {
     type: Number,
-    unique: [true, 'Employee must have a unique number.']
+    unique: [true, 'Employee must have a unique number.'],
+    required: true,
   },
-  firstName: String,
-  lastName: String,
+  firstName: {
+    type: String,
+    required: true
+  },
+  lastName: {
+    type: String,
+    required: true
+  },
   middleName: String,
-  age: Number,
+  age: {
+    type: Number,
+    required: true
+  },
   designation: {
     type: String,
     enum: [
@@ -22,7 +32,10 @@ const employeeSchema = new Schema({
       'Senior Manager'
     ]
   },
-  salary: Number
+  salary: {
+    type: Number,
+    required: true
+  }
 });
 
 // Define model

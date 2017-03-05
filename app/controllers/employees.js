@@ -1,11 +1,24 @@
+const Employees = require('../models/employees');
 
 const employeesCtrl = {
   getAll(req, res) {
-    res.send('getAll: employees');
+    Employees.find()
+      .then((emoloyees) => {
+        res.send(emoloyees);
+      })
+      .catch((err) => {
+        res.status(500).send({ error: err.message });
+      });
   },
 
   create(req, res) {
-    res.send('create: employees');
+    Employees.create(req.body)
+      .then((employee) => {
+        res.send(employee);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.message });
+      })
   },
 
   getOne(req, res) {
