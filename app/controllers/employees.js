@@ -2,7 +2,10 @@ const Employees = require('../models/employees');
 
 const employeesCtrl = {
   getAll(req, res) {
-    Employees.find()
+    const page = req.query.page || 1;
+    const skip = page == 1 ? 0 : (page - 1) * 10;
+
+    Employees.find().limit(10).skip(skip)
       .then((emoloyees) => {
         res.send(emoloyees);
       })
