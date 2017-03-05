@@ -35,6 +35,10 @@ const employeeSchema = new Schema({
   salary: {
     type: Number,
     required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 });
 

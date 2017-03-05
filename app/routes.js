@@ -12,7 +12,7 @@ router.route('/employees/:id')
   .delete(employeesCtrl.delete);
 
 router.get('*', (req, res) => {
-  res.send({ message: 'Welcome to the Employees API.' });
+  res.sendfile(__dirname + '/public/index.html');
 })
 
 module.exports = router;
