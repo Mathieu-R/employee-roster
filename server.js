@@ -7,7 +7,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const port = process.env.PORT || 3000;
-const dbURI = process.env.DATABASE_URL
+const dbURI = process.env.MONGODB_URI
 const routes = require('./app/routes');
 
 const app = express();
