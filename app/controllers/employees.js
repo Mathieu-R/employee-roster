@@ -5,15 +5,18 @@ const employeesCtrl = {
     const page = req.query.page || 1;
     const skip = page == 1 ? 0 : (page - 1) * 10;
 
-    Employees.find()
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .skip(skip)
-      .then((emoloyees) => {
-        res.send(emoloyees);
-      })
-      .catch((err) => {
-        res.status(500).send({ message: err.message });
+    Employees.count({})
+      .then((count) => {
+        Employees.find()
+          .sort({ createdAt: -1 })
+          .limit(10)
+          .skip(skip)
+          .then((employees) => {
+            res.send({ employees, count });
+          })
+          .catch((err) => {
+            res.status(500).send({ message: err });
+          })
       });
   },
 

@@ -1,43 +1,45 @@
-var app = angular.module('EmployeeRoster', ['ui.bootstrap']);
+var app = angular.module('EmployeeRoster', ['ui.bootstrap', 'angularUtils.directives.dirPagination']);
 
-app.factory('EmployeeFactory', ['$http', function ($http) {
+app.service('EmployeeService', ['$http', function ($http) {
   var baseURL = '/employees';
+	this.getEmployees = (page) => {
+		page = page || 1;
+		return $http.get(baseURL + '?page=' + page);
+	}
 
-  return {
-    getEmployees() {
-      return $http.get(baseURL);
-    },
+  this.createEmployee = (params) => {
+		return $http.post(baseURL, params);
+	}
 
-    createEmployee(params) {
-      return $http.post(baseURL, params);
-    },
+  this.getEmployee = (number) => {
+		return $http.get(baseURL + '/' + number);
+	}
 
-    getEmployee(number) {
-      return $http.get(baseURL + '/' + number);
-    },
+  this.updateEmployee = (number, params) => {
+		return $http.put(baseURL + '/' + number, params);
+	}
 
-    updateEmployee(number, params) {
-      return $http.put(baseURL + '/' + number, params);
-    },
-
-    deleteEmployee(number) {
-      return $http.delete(baseURL + '/' + number);
-    },
-  };
+  this.deleteEmployee = (number) => {
+    return $http.delete(baseURL + '/' + number);
+  }
 }]);
 
-app.controller('EmployeeRosterCtrl', ['$scope', 'EmployeeFactory', function ($scope, EmployeeFactory) {
+app.controller('EmployeeRosterCtrl', ['$scope', 'EmployeeService', function ($scope, EmployeeService) {
   $scope.formMode = true; //true : insert,  false : edit
 	$scope.addshow = false;
 	$scope.editingrow = -1;
 	$scope.employeenumber;
   $scope.selrows = [];
-  $scope.formModel;
+	$scope.employees = [];
+  $scope.formModel = {};
+	$scope.page = 1;
+	$scope.employeeCount = 0;
 
-  function fetchData() {
-    EmployeeFactory.getEmployees()
+  function fetchData(page) {
+    EmployeeService.getEmployees(page)
       .then(function (response) {
-        $scope.employees = response.data;
+        $scope.employees = response.data.employees;
+				$scope.employeeCount = response.data.count;
       }, function (error) {
           $scope.status = 'Unable to load customer data: ' + error.message;
       });
@@ -48,6 +50,10 @@ app.controller('EmployeeRosterCtrl', ['$scope', 'EmployeeFactory', function ($sc
     initFormModel();
     initTableModel();
   }
+
+	$scope.pageChanged = function (page) {
+		fetchData(page);
+	}
   
   function initFormModel() {
     $scope.formModel = {
@@ -132,13 +138,13 @@ app.controller('EmployeeRosterCtrl', ['$scope', 'EmployeeFactory', function ($sc
 
 		if ($scope.editflag == 0) {
 			//insert.
-			EmployeeFactory.updateEmployee(employeeObj.number, employeeObj)
+			EmployeeService.updateEmployee(employeeObj.number, employeeObj)
         .then(function (response) {}, function (error) {
             $scope.status = 'Unable to load customer data: ' + error.message;
         });
 		} else {
 			//push.
-			EmployeeFactory.createEmployee(employeeObj)
+			EmployeeService.createEmployee(employeeObj)
         .then(function (response) {}, function (error) {
             $scope.status = 'Unable to load customer data: ' + error.message;
         });
@@ -186,7 +192,7 @@ app.controller('EmployeeRosterCtrl', ['$scope', 'EmployeeFactory', function ($sc
       $scope.employeenumber = $scope.selrows[i] ;
       var emp = $scope.employees.find((employee) => employee.number == $scope.employeenumber);
 
-      EmployeeFactory.deleteEmployee(emp.number)
+      EmployeeService.deleteEmployee(emp.number)
         .then(function (response) {
           if ($scope.editingrow === emp.number) {
             $scope.addshow = false;
@@ -236,7 +242,7 @@ app.controller('EmployeeRosterCtrl', ['$scope', 'EmployeeFactory', function ($sc
 	};
 
   $scope.onNumberChange = function () {
-		//check duplication.
+		//check duplication.\
 		if ($scope.employees == null || $scope.formModel.number == '') return;
 
 		for (i = 0; i < $scope.employees.length; i++) {
