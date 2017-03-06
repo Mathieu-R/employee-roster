@@ -22,8 +22,8 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
 </head>
 
-<body ng-controller="EmployeeRosterCtrl" ng-cloak ng-class="addShow? 'form-active': ''">
-  <div id="header" class="container-fluid">
+<body  ng-cloak>
+  <header id="header" class="container-fluid">
     <div class="row">
       <div class="col-xs-12">
         <h1>Employee Roster</h1>
@@ -34,169 +34,18 @@
         <input type="text" ng-model="search.$" placeholder="&#xf002;&nbsp;&nbsp;&nbsp;Search employees&hellip;&nbsp;">
       </div>
     </div>
-  </div>
-  <div id="page-main" class="container-fluid" ng-class="addshow? 'form-active' : 'form-inactive'">
+  </header>
+  <div id="page-main" class="container-fluid">
     <div class="container">
       <div class="row">
-        <div id="left-side" class="col-md-6">
-          <h2 class="main-column-heading">Current Employees</h2>
-          <div ng-show="addshow" id="editing-overlay">You are currently in edit mode.</div>
-          <table id="employee-table" class="table table-condensed table-hover">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Middle Name</th>
-                <th>Age</th>
-                <th>Designation</th>
-                <th>Salary</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr dir-paginate="employeeObj in employees | itemsPerPage: 10 | filter:search:strict"
-                total-items="employeeCount" current-page="page"
-                ng-click="selectRow($event, employeeObj.number)">
-                <td data-label="#">{{employeeObj.number}}</td>
-                <td data-label="First Name">{{employeeObj.firstName}}</td>
-                <td data-label="Last Name">{{employeeObj.lastName}}</td>
-                <td data-label="Middle Name">{{employeeObj.middleName}}</td>
-                <td data-label="Age">{{employeeObj.age|number:0}}</td>
-                <td data-label="Designation">{{employeeObj.designation}}</td>
-                <td data-label="Salary"><span class="currency">{{employeeObj.salary|number}}</span></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div align="center" id="employee-table-pagination">
-            <div>{{page*10-9}}–{{page*10}} of {{employeeCount}}<span class="hideen-xs"> total employees</span></div>
-            <dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
-          </div>
-
-          <div align="center" id="employee-table-controls">
-            <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{addshow&&formMode?'You are currently adding an employee.':addshow?'You are currently editing an employee.':''}}"> 
-              <a class="btn btn-lg btn-primary btn-green" ng-disabled="addshow" ng-click="add()" type="button"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</a>
-            </span>&nbsp;&nbsp;
-            <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{addshow&&formMode?'You are currently adding an employee.':addshow?'You are currently editing an employee.':selrows.length==0?'Please select the employee you wish you to edit.':selrows.length>=2?'You can only edit one employee at a time.':''}}">  
-              <a class="btn btn-lg btn-primary btn-blue" ng-disabled="selrows.length!=1 || addshow" ng-click="edit()" type="button"><i class="fa fa-pencil"></i>&nbsp;&nbsp;Edit</a>
-            </span>&nbsp;&nbsp;
-            <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{selrows.length==0?'Please select the employee(s) you wish you to delete.':''}}">  
-              <a class="btn btn-lg btn-primary btn-red" ng-disabled="selrows.length<1"  ng-click="openmodal()" type="button"><i class="fa fa-trash"></i>&nbsp;&nbsp;Delete</a>
-            </span>
-          </div>
-
-        </div>
-        <div id="right-side" class="col-md-6" ng-show="addshow">
-          <h2 class="main-column-heading">{{formMode?'Add Employee':'Edit Employee'}}</h2>
-          <form action="" id="employee-form" name="employeeForm">
-            <div class="row">
-              <div class="col-sm-3">
-                <div class="formgroup">
-                  <label for="employee-firstName" class="label-required">First Name</label>
-                  <input type="text" class="form-control" id="employee-firstName" ng-model="formModel.firstName" required>
-                </div>
-                <!-- .formgroup -->
-              </div>
-              <!-- .col-sm-3 -->
-              <div class="col-sm-4">
-                <div class="formgroup">
-                  <label for="employee-lastName" class="label-required">Last Name</label>
-                  <input type="text" class="form-control" id="employee-lastName" ng-model="formModel.lastName" required>
-                </div>
-                <!-- .formgroup -->
-              </div>
-              <!-- .col-sm-4 -->
-              <div class="col-sm-3">
-                <div class="formgroup">
-                  <label for="employee-middleName">Middle Name</label>
-                  <input type="text" class="form-control" id="employee-middleName" ng-model="formModel.middleName">
-                </div>
-                <!-- .formgroup -->
-              </div>
-              <!-- .col-sm-3 -->
-              <div class="col-sm-2">
-                <div class="formgroup">
-                  <label for="employee-age" class="label-required">Age</label>
-
-                  <input type="number" min="0" class="form-control" id="employee-age" ng-model="formModel.age" required>
-                </div>
-                <!-- .formgroup -->
-              </div>
-              <!-- .col-sm-2 -->
-            </div>
-            <!-- .row -->
-            <div class="row">
-              <div class="col-sm-5">
-                <div class="formgroup">
-                  <label for="employee-designation" class="label-required">Designation</label>
-                  <select type="text" class="form-control" id="employee-designation"
-                    ng-change="formModel.salary=formModel.designation.min" ng-model="formModel.designation"
-                    ng-options="x.name for x in designations" required>
-                  </select>
-
-                </div>
-                <!-- .formgroup -->
-              </div>
-              <!-- .col-sm-5 -->
-              <div class="col-sm-4">
-                <div class="formgroup">
-                  <label for="employee-salary" class="label-required">Salary</label>
-                  <span uib-tooltip="{{(''+formModel.designation).length==0?'Please select a designation in order to set the salary.':''}}"
-                    tooltip-placement="top">
-                              <input
-                                name="employees_salary"
-                                type="number"
-                                class="form-control has-feedback"
-                                id="employee-salary"
-                                ng-model="formModel.salary"
-                                min="{{formModel.designation.min}}"
-                                max="{{formModel.designation.max}}"
-                                ng-disabled="(''+formModel.designation).length==0"
-                                required
-                                uib-tooltip="{{employeeForm.employees_salary.$error.min || employeeForm.employees_salary.$error.max ? 'The salary for this position ranges from $'+getMinSalaryfunction()+' to $'+getMaxSalaryfunction():''}}"
-                                tooltip-placement="top"
-                                >
-                              </span>
-                  <small class="salary-sublabel" ng-hide="(''+formModel.designation).length==0"><span class="currency min" >{{formModel.designation.min | number}}</span> - <span class="currency max">{{formModel.designation.max | number}}</span></small>
-                </div>
-                <!-- .formgroup -->
-              </div>
-              <!-- .col-sm-4 -->
-              <div class="col-sm-3">
-                <div class="formgroup">
-                  <label for="employee-number" class="label-required">Number</label>
-                  <span uib-tooltip="{{!formModel.number?'Employee number must be positive.':''}}" tooltip-placement="top">
-                    <input tooltip-placement="top" uib-tooltip="{{duplicated?'This customer number is already in use. Please enter a unique number.':''}}"
-                      type="number" class="form-control" id="employee-number" ng-model="formModel.number" min="1" ng-change="onNumberChange()" required>
-                  </span>
-                </div>
-                <!-- .formgroup -->
-              </div>
-              <!-- .col-sm-4 -->
-            </div>
-            <!-- .row -->
-            <div class="row">
-              <div class="col-xs-12">
-                <div class="form-group">
-                  <span class="buttonwrapper" id="submittooltip" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{employeeForm.$valid?'':'Please complete all required fields.'}}">
-                            <a id="submita" class="btn btn-lg btn-green btn-primary" ng-disabled="!employeeForm.$valid"  ng-click="onSubmit()" type="button"><i class="fa fa-check"></i>&nbsp;&nbsp;Save</a>
-                          </span>&nbsp;
-                  <a class="btn btn-lg btn-gray btn-primary" type="button" ng-click="onCancel()"><i class="fa fa-times"></i>&nbsp;&nbsp;Cancel</a>
-
-                </div>
-                <!-- .form-group -->
-              </div>
-              <!-- .col-xs-12 -->
-            </div>
-            <!-- .row -->
-          </form>
-
-        </div>
-        <!-- .col-md-6 -->
+        <div ng-include="'templates/list.html'"></div>
+        <div ui-view id="right-side" class="col-md-6"></div>
       </div>
+
     </div>
   </div>
-  <div id="footer" class="conatiner-fluid">
+
+  <footer id="footer" class="conatiner-fluid">
     <div class="container">
       <div class="row">
         <div class="col-xs-12">
@@ -204,18 +53,20 @@
         </div>
       </div>
     </div>
-  </div>
+  </footer>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
     crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/js/bootstrap-dialog.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.2/angular-animate.js"></script>
-  <script src="js/dirPagination.js"></script>
+  <script src="//unpkg.com/angular-ui-router/release/angular-ui-router.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.3.3/ui-bootstrap-tpls.min.js"></script>
+  <script src="js/dirPagination.js"></script>
   <script src="js/app.js"></script>
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
     crossorigin="anonymous">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/js/bootstrap-dialog.min.js"></script>
 </body>
 </html>

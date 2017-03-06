@@ -1,5 +1,5 @@
 /* THEME COLOR */
-body, #header, #footer { background: #546e7a; }
+body, header, footer { background: #546e7a; }
 
 /* THEME FONT */
 body { font-family: "proxima-nova", arial, sans-serif; }
@@ -383,11 +383,11 @@ button:not([disabled]):hover, .btn:not([disabled]):hover {
     color: #fff !important;
 }
 
-#header * {
+header * {
     color: #fff;
 }
 
-#header h1 {
+header h1 {
     display: block;
     text-align: center;
     line-height: 0;
@@ -396,15 +396,15 @@ button:not([disabled]):hover, .btn:not([disabled]):hover {
     color: #fff;
 }
 
-#header #table-filter {
+header #table-filter {
     background: rgba(0, 0, 0, 0.35);
 }
 
-#header #table-filter [class*="col-"] {
+header #table-filter [class*="col-"] {
     text-align: center;
 }
 
-#header #table-filter input {
+header #table-filter input {
     width: 100%;
     font-size: 16px;
     padding: 14px 20px 14px 40px;
@@ -415,23 +415,23 @@ button:not([disabled]):hover, .btn:not([disabled]):hover {
     color: rgba(255, 255, 255, 0.65);
 }
 
-#header #table-filter input:focus {
+header #table-filter input:focus {
     outline: 0;
 }
 
-#header #table-filter input::-webkit-input-placeholder {
+header #table-filter input::-webkit-input-placeholder {
     color: rgba(255, 255, 255, 0.35);
 }
 
-#header #table-filter input:-moz-placeholder {
+header #table-filter input:-moz-placeholder {
     color: rgba(255, 255, 255, 0.35);
 }
 
-#header #table-filter input::-moz-placeholder {
+header #table-filter input::-moz-placeholder {
     color: rgba(255, 255, 255, 0.35);
 }
 
-#header #table-filter input:-ms-input-placeholder {
+header #table-filter input:-ms-input-placeholder {
     color: rgba(255, 255, 255, 0.35);
 }
 
@@ -596,22 +596,22 @@ span.buttonwrapper {
     form .salary-sublabel:after { content: ")"; padding-left: 1px; }
 }
 
-#footer {
+footer {
     position: relative;
     padding: 24px 0;
     z-index: 2;
 }
 
-#footer * {
+footer * {
     color: rgba(255, 255, 255, 0.5);
 }
 
-#footer #footer-logo {
+footer #footer-logo {
     width: 138px;
     height: auto;
 }
 
-#footer .copyright {
+footer .copyright {
     margin-top: 15px;
     line-height: 0;
 }
@@ -630,7 +630,7 @@ span.buttonwrapper {
 /* Landscape phone to portrait tablet */
 
 @media (max-width: 767px) {
-    #header h1 {
+    header h1 {
         padding: 4vw 0 5vw;
         font-size: calc(4vw + 18px);
     }

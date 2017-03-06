@@ -1,0 +1,46 @@
+<div id="left-side" class="col-md-6" ng-controller="employeesController">
+  <h2 class="main-column-heading">Current Employees</h2>
+  <table id="employee-table" class="table table-condensed table-hover">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Middle Name</th>
+        <th>Age</th>
+        <th>Designation</th>
+        <th>Salary</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr dir-paginate="employee in employees | itemsPerPage: 10 | filter:search:strict"
+        total-items="employeeCount" current-page="page"
+        ng-click="selectRow($event, employee.number)">
+        <td data-label="#">{{employee.number}}</td>
+        <td data-label="First Name">{{employee.firstName}}</td>
+        <td data-label="Last Name">{{employee.lastName}}</td>
+        <td data-label="Middle Name">{{employee.middleName}}</td>
+        <td data-label="Age">{{employee.age|number:0}}</td>
+        <td data-label="Designation">{{employee.designation}}</td>
+        <td data-label="Salary"><span class="currency">{{employee.salary|number}}</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div align="center" id="employee-table-pagination">
+    <div>{{page*10-9}}–{{page*10}} of {{employeeCount}}<span class="hideen-xs"> total employees</span></div>
+    <dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+  </div>
+
+  <div align="center" id="employee-table-controls">
+    <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{addshow&&formMode?'You are currently adding an employee.':addshow?'You are currently editing an employee.':''}}"> 
+      <a ui-sref="addEmploye" class="btn btn-lg btn-primary btn-green" ><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</a>
+    </span>&nbsp;&nbsp;
+    <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{addshow&&formMode?'You are currently adding an employee.':addshow?'You are currently editing an employee.':selrows.length==0?'Please select the employee you wish you to edit.':selrows.length>=2?'You can only edit one employee at a time.':''}}">  
+      <a class="btn btn-lg btn-primary btn-blue" ng-disabled="selrows.length!=1 || addshow" ng-click="edit()" type="button"><i class="fa fa-pencil"></i>&nbsp;&nbsp;Edit</a>
+    </span>&nbsp;&nbsp;
+    <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{selrows.length==0?'Please select the employee(s) you wish you to delete.':''}}">  
+      <a class="btn btn-lg btn-primary btn-red" ng-disabled="selrows.length<1"  ng-click="openmodal()" type="button"><i class="fa fa-trash"></i>&nbsp;&nbsp;Delete</a>
+    </span>
+  </div>
+</div>
