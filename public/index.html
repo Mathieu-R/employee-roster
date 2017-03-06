@@ -35,13 +35,12 @@
       </div>
     </div>
   </header>
-  <div id="page-main" class="container-fluid">
+  <div id="page-main" class="container-fluid" ng-class="addshow? 'form-active' : 'form-inactive'">
     <div class="container">
       <div class="row">
         <div ng-include="'templates/list.html'"></div>
         <div ui-view id="right-side" class="col-md-6"></div>
       </div>
-
     </div>
   </div>
 

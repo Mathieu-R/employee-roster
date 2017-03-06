@@ -1,0 +1,100 @@
+<form action="" id="employee-form" name="employeeForm">
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="formgroup">
+        <label for="employee-firstName" class="label-required">First Name</label>
+        <input type="text" class="form-control" id="employee-firstName" ng-model="formModel.firstName" required>
+      </div>
+      <!-- .formgroup -->
+    </div>
+    <!-- .col-sm-3 -->
+    <div class="col-sm-4">
+      <div class="formgroup">
+        <label for="employee-lastName" class="label-required">Last Name</label>
+        <input type="text" class="form-control" id="employee-lastName" ng-model="formModel.lastName" required>
+      </div>
+      <!-- .formgroup -->
+    </div>
+    <!-- .col-sm-4 -->
+    <div class="col-sm-3">
+      <div class="formgroup">
+        <label for="employee-middleName">Middle Name</label>
+        <input type="text" class="form-control" id="employee-middleName" ng-model="formModel.middleName">
+      </div>
+      <!-- .formgroup -->
+    </div>
+    <!-- .col-sm-3 -->
+    <div class="col-sm-2">
+      <div class="formgroup">
+        <label for="employee-age" class="label-required">Age</label>
+
+        <input type="number" min="0" class="form-control" id="employee-age" ng-model="formModel.age" required>
+      </div>
+      <!-- .formgroup -->
+    </div>
+    <!-- .col-sm-2 -->
+  </div>
+  <!-- .row -->
+  <div class="row">
+    <div class="col-sm-5">
+      <div class="formgroup">
+        <label for="employee-designation" class="label-required">Designation</label>
+        <select type="text" class="form-control" id="employee-designation" ng-change="formModel.salary=formModel.designation.min"
+          ng-model="formModel.designation" ng-options="x.name for x in designations" required>
+                </select>
+
+      </div>
+      <!-- .formgroup -->
+    </div>
+    <!-- .col-sm-5 -->
+    <div class="col-sm-4">
+      <div class="formgroup">
+        <label for="employee-salary" class="label-required">Salary</label>
+        <span uib-tooltip="{{(''+formModel.designation).length==0?'Please select a designation in order to set the salary.':''}}"
+          tooltip-placement="top">
+                            <input
+                              name="employees_salary"
+                              type="number"
+                              class="form-control has-feedback"
+                              id="employee-salary"
+                              ng-model="formModel.salary"
+                              min="{{formModel.designation.min}}"
+                              max="{{formModel.designation.max}}"
+                              ng-disabled="(''+formModel.designation).length==0"
+                              required
+                              uib-tooltip="{{employeeForm.employees_salary.$error.min || employeeForm.employees_salary.$error.max ? 'The salary for this position ranges from $'+getMinSalaryfunction()+' to $'+getMaxSalaryfunction():''}}"
+                              tooltip-placement="top"
+                              >
+                            </span>
+        <small class="salary-sublabel" ng-hide="(''+formModel.designation).length==0"><span class="currency min" >{{formModel.designation.min | number}}</span> - <span class="currency max">{{formModel.designation.max | number}}</span></small>
+      </div>
+      <!-- .formgroup -->
+    </div>
+    <!-- .col-sm-4 -->
+    <div class="col-sm-3">
+      <div class="formgroup">
+        <label for="employee-number" class="label-required">Number</label>
+        <span uib-tooltip="{{!formModel.number?'Employee number must be positive.':''}}" tooltip-placement="top">
+                  <input tooltip-placement="top" uib-tooltip="{{duplicated?'This customer number is already in use. Please enter a unique number.':''}}"
+                    type="number" class="form-control" id="employee-number" ng-model="formModel.number" min="1" ng-change="onNumberChange()" required>
+                </span>
+      </div>
+      <!-- .formgroup -->
+    </div>
+    <!-- .col-sm-4 -->
+  </div>
+  <!-- .row -->
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <span class="buttonwrapper" id="submittooltip" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{employeeForm.$valid?'':'Please complete all required fields.'}}">
+                          <a id="submita" class="btn btn-lg btn-green btn-primary" ng-disabled="!employeeForm.$valid"  ng-click="onSubmit()" type="button"><i class="fa fa-check"></i>&nbsp;&nbsp;Save</a>
+                        </span>&nbsp;
+        <a class="btn btn-lg btn-gray btn-primary" type="button" ui-sref="employees"><i class="fa fa-times"></i>&nbsp;&nbsp;Cancel</a>
+      </div>
+      <!-- .form-group -->
+    </div>
+    <!-- .col-xs-12 -->
+  </div>
+  <!-- .row -->
+</form>
