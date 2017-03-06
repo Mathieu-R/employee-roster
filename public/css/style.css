@@ -640,3 +640,35 @@ span.buttonwrapper {
 /* Landscape phones and down */
 
 @media (max-width: 480px) {}
+
+#page-main.form-active #employee-table,
+#page-main.form-active #employee-table-pagination,
+#page-main.form-active #employee-table-controls {
+    opacity: 0.65;
+    cursor: default;
+}
+
+#page-main.form-active #employee-table,
+#page-main.form-active #employee-table *,
+#page-main.form-active #employee-table-pagination,
+#page-main.form-active #employee-table-pagination *,
+#page-main.form-active #employee-table-controls,
+#page-main.form-active #employee-table-controls * {
+    user-select: none;
+    pointer-events: none;
+}
+
+#editing-overlay {
+    text-align: center;
+    z-index: 1;
+    position: absolute;
+    display: block;
+    margin-top: 150px;
+    background: #546e7a;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-size: 20px;
+    font-weight: 700;
+    margin-left: calc(31%);
+}
