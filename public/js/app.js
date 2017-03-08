@@ -1,4 +1,8 @@
-var app = angular.module('EmployeeRoster', ['ui.router', 'ui.bootstrap', 'angularUtils.directives.dirPagination']);
+var app = angular.module('EmployeeRoster', [
+	'ui.router',
+	'ui.bootstrap',
+	'angularUtils.directives.dirPagination'
+]);
 
 app.config(function ($stateProvider, $urlRouterProvider) {
 	$stateProvider
@@ -24,7 +28,6 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 	// if none of the above states are matched, use this as the fallback
 	$urlRouterProvider.otherwise('/');
 });
-
 
 app.factory('EmployeeFactory', ['$http', function ($http) {
 	var baseURL = '/employees';
@@ -72,18 +75,15 @@ app.factory('dialogFactory', [function () {
 }]);
 
 app.service('formService', [function () {
-	var state = {};
 	var _editing = false;
 
-	state.editing = function () {
+	this.editing = function () {
 		return _editing;
 	}
 
-	state.setEditing = function (value) {
+	this.setEditing = function (value) {
 		_editing = value;
 	}
-
-	return state;
 }]);
 
 app.controller('employeesController', ['$scope', '$state', 'EmployeeFactory', 'formService', 'dialogFactory',
@@ -206,37 +206,39 @@ app.controller('formController', ['$scope', '$rootScope', '$state', 'EmployeeFac
 		$scope.formModel = {};
 		$scope.editflag = 0;
 		formService.setEditing(true);
-		$scope.designations = [{
-			name: 'Consultant',
-			min: 30000,
-			max: 35000,
-			value: 30000
-		}, {
-			name: 'Senior Consultant',
-			min: 36000,
-			max: 40000,
-			value: 36000
-		}, {
-			name: 'Lead',
-			min: 41000,
-			max: 45000,
-			value: 41000
-		}, {
-			name: 'Assistant Manager',
-			min: 46000,
-			max: 50000,
-			value: 460004
-		}, {
-			name: 'Manager',
-			min: 51000,
-			max: 55000,
-			value: 510004
-		}, {
-			name: 'Senior Manager',
-			min: 56000,
-			max: 80000,
-			value: 560004
-		}];
+		$scope.designations = [
+			{
+				name: 'Consultant',
+				min: 30000,
+				max: 35000,
+				value: 30000
+			}, {
+				name: 'Senior Consultant',
+				min: 36000,
+				max: 40000,
+				value: 36000
+			}, {
+				name: 'Lead',
+				min: 41000,
+				max: 45000,
+				value: 41000
+			}, {
+				name: 'Assistant Manager',
+				min: 46000,
+				max: 50000,
+				value: 460004
+			}, {
+				name: 'Manager',
+				min: 51000,
+				max: 55000,
+				value: 510004
+			}, {
+				name: 'Senior Manager',
+				min: 56000,
+				max: 80000,
+				value: 560004
+			}
+		];
 
 		if ($stateParams.number) {
 			$scope.editflag = 1;
@@ -260,13 +262,16 @@ app.controller('formController', ['$scope', '$rootScope', '$state', 'EmployeeFac
 					}
 
 				}, (err) => {
-					$scope.status = 'Employee not found: ' + error.message;
+					dialogFactory.showDialog(
+						'Employee with Number: ' + $stateParams.number + ' not found',
+						BootstrapDialog.TYPE_DANGER
+					);
+					formService.setEditing(false);
+					$state.go('employees');
 				})
 		} else {
 			$scope.editflag = 0;
 		}
-
-		$rootScope.$broadcast('editing', true);
 
 		$scope.onSubmit = function () {
 			// Number is invalid
