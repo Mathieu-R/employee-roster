@@ -533,7 +533,6 @@ span.buttonwrapper {
 }
 
 .modal-header {
-    background-color: #f44336 !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-top-left-radius: 8px !important;
     border-top-right-radius: 8px !important;
@@ -641,19 +640,19 @@ footer .copyright {
 
 @media (max-width: 480px) {}
 
-#page-main.form-active #employee-table,
-#page-main.form-active #employee-table-pagination,
-#page-main.form-active #employee-table-controls {
+.form-active #employee-table,
+.form-active #employee-table-pagination,
+.form-active #employee-table-controls {
     opacity: 0.65;
     cursor: default;
 }
 
-#page-main.form-active #employee-table,
-#page-main.form-active #employee-table *,
-#page-main.form-active #employee-table-pagination,
-#page-main.form-active #employee-table-pagination *,
-#page-main.form-active #employee-table-controls,
-#page-main.form-active #employee-table-controls * {
+.form-active #employee-table,
+.form-active #employee-table *,
+.form-active #employee-table-pagination,
+.form-active #employee-table-pagination *,
+.form-active #employee-table-controls,
+.form-active #employee-table-controls * {
     user-select: none;
     pointer-events: none;
 }

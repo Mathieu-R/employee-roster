@@ -1,4 +1,4 @@
-<div id="left-side" class="col-md-6" ng-controller="employeesController">
+<div id="left-side" class="col-md-6" ng-controller="employeesController" ng-class="editing()? 'form-active' : 'form-inactive'">
   <h2 class="main-column-heading">Current Employees</h2>
   <table id="employee-table" class="table table-condensed table-hover">
     <thead>
@@ -33,11 +33,11 @@
   </div>
 
   <div align="center" id="employee-table-controls">
-    <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{addshow&&formMode?'You are currently adding an employee.':addshow?'You are currently editing an employee.':''}}"> 
+    <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{editing()&&formMode?'You are currently adding an employee.':editing()?'You are currently editing an employee.':''}}"> 
       <a ui-sref="addEmploye" class="btn btn-lg btn-primary btn-green" ><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</a>
     </span>&nbsp;&nbsp;
-    <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{addshow&&formMode?'You are currently adding an employee.':addshow?'You are currently editing an employee.':selrows.length==0?'Please select the employee you wish you to edit.':selrows.length>=2?'You can only edit one employee at a time.':''}}">  
-      <a class="btn btn-lg btn-primary btn-blue" ng-disabled="selrows.length!=1 || addshow" ng-click="edit()" type="button"><i class="fa fa-pencil"></i>&nbsp;&nbsp;Edit</a>
+    <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{editing()&&formMode?'You are currently adding an employee.':editing()?'You are currently editing an employee.':selrows.length==0?'Please select the employee you wish you to edit.':selrows.length>=2?'You can only edit one employee at a time.':''}}">  
+      <a class="btn btn-lg btn-primary btn-blue" ng-disabled="selrows.length!=1 || editing()" ng-click="edit()" type="button"><i class="fa fa-pencil"></i>&nbsp;&nbsp;Edit</a>
     </span>&nbsp;&nbsp;
     <span class="buttonwrapper" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{selrows.length==0?'Please select the employee(s) you wish you to delete.':''}}">  
       <a class="btn btn-lg btn-primary btn-red" ng-disabled="selrows.length<1"  ng-click="openmodal()" type="button"><i class="fa fa-trash"></i>&nbsp;&nbsp;Delete</a>

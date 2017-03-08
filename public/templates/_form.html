@@ -90,7 +90,7 @@
         <span class="buttonwrapper" id="submittooltip" tooltip-tirgger="click mouseenter" tooltip-placement="top" uib-tooltip="{{employeeForm.$valid?'':'Please complete all required fields.'}}">
                           <a id="submita" class="btn btn-lg btn-green btn-primary" ng-disabled="!employeeForm.$valid"  ng-click="onSubmit()" type="button"><i class="fa fa-check"></i>&nbsp;&nbsp;Save</a>
                         </span>&nbsp;
-        <a class="btn btn-lg btn-gray btn-primary" type="button" ui-sref="employees"><i class="fa fa-times"></i>&nbsp;&nbsp;Cancel</a>
+        <a class="btn btn-lg btn-gray btn-primary" type="button" ng-click="cancel()"><i class="fa fa-times"></i>&nbsp;&nbsp;Cancel</a>
       </div>
       <!-- .form-group -->
     </div>

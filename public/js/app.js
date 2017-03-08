@@ -1,7 +1,7 @@
 var app = angular.module('EmployeeRoster', ['ui.router', 'ui.bootstrap', 'angularUtils.directives.dirPagination']);
 
-app.config(function($stateProvider, $urlRouterProvider) {
-  $stateProvider
+app.config(function ($stateProvider, $urlRouterProvider) {
+	$stateProvider
 		// setup an abstract state for the tabs directive
 		.state('employees', {
 			url: '/'
@@ -13,7 +13,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
 			controller: 'formController',
 			controllerAs: 'form'
 		})
-		
+
 		.state('editEmployee', {
 			url: '/employees/edit/:number',
 			templateUrl: 'templates/edit.html',
@@ -21,13 +21,13 @@ app.config(function($stateProvider, $urlRouterProvider) {
 			controllerAs: 'form'
 		});
 
-  // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/');
+	// if none of the above states are matched, use this as the fallback
+	$urlRouterProvider.otherwise('/');
 });
 
 
 app.factory('EmployeeFactory', ['$http', function ($http) {
-  var baseURL = '/employees';
+	var baseURL = '/employees';
 	return {
 		getEmployees(page) {
 			page = page || 1;
@@ -52,129 +52,161 @@ app.factory('EmployeeFactory', ['$http', function ($http) {
 	}
 }]);
 
-app.service('formService', [ function () {
+app.factory('dialogFactory', [function () {
+	return {
+		showDialog(message, type) {
+			BootstrapDialog.show({
+				message: message,
+				closable: true,
+				type: type,
+				buttons: [{
+					label: '<i class="fa fa-check"></i>&nbsp;&nbsp;Okay',
+					cssClass: 'btn-lg btn-green delete-button-delete',
+					action: function (dialogRef) {
+						dialogRef.close();
+					}
+				}]
+			});
+		}
+	}
+}]);
+
+app.service('formService', [function () {
 	var state = {};
-	var _addshow = false;
+	var _editing = false;
 
-	state.addshow = function () {
-		return _addshow;
+	state.editing = function () {
+		return _editing;
 	}
 
-	state.set = {
-		addshow(value) {
-			_addshow = value;
-		}
+	state.setEditing = function (value) {
+		_editing = value;
 	}
+
+	return state;
 }]);
 
-app.controller('employeesController', ['$scope', '$state', 'EmployeeFactory', 'formService', function ($scope, $state, EmployeeFactory, formService) {
-	$scope.editingrow = -1;
-	$scope.employeenumber;
-  $scope.selrows = [];
-	$scope.employees = [];
-	$scope.page = 1;
-	$scope.addshow = false;
-	$scope.employeeCount = 0;
-
-	function fetchData(page) {
-    EmployeeFactory.getEmployees(page)
-      .then(function (response) {
-        $scope.employees = response.data.employees;
-				$scope.employeeCount = response.data.count;
-      }, function (error) {
-          $scope.status = 'Unable to load customer data: ' + error.message;
-      });
-  }
-
-	function initTableModel() {
+app.controller('employeesController', ['$scope', '$state', 'EmployeeFactory', 'formService', 'dialogFactory',
+	function ($scope, $state, EmployeeFactory, formService, dialogFactory) {
+		$scope.employeeNumber;
 		$scope.selrows = [];
-		$('table tr').removeClass('selected');
-	};
+		$scope.employees = [];
+		$scope.page = 1;
+		$scope.addshow = true;
+		$scope.employeeCount = 0;
 
-	$scope.pageChanged = function (page) {
-		fetchData(page);
-	};
+		formService.setEditing(false);
 
-	$scope.delete = function () {
-		//sort the No(order in table) array of checked rows.
-		$scope.selrows.sort();
+		function fetchData(page) {
+			EmployeeFactory.getEmployees(page)
+				.then(function (response) {
+					$scope.employees = response.data.employees;
+					$scope.employeeCount = response.data.count;
 
-		for (i = $scope.selrows.length - 1; i >= 0; i--) {
-      $scope.employeenumber = $scope.selrows[i] ;
-      var emp = $scope.employees.find((employee) => employee.number == $scope.employeenumber);
-
-      EmployeeFactory.deleteEmployee(emp.number)
-        .then(function (response) {
-          if ($scope.editingrow === emp.number) {
-            $scope.addshow = false;
-          }
-          
-          fetchData();
-        }, function (error) {
-            $scope.status = 'Unable to delete employee: ' + error.message;
-        });
+					if ($scope.employees.length < 1) {
+						$state.go("addEmploye");
+					}
+				}, function (error) {
+					dialogFactory.showDialog('Failed to load employee data', BootstrapDialog.TYPE_DANGER);
+				});
 		}
 
-		$scope.formMode = true;
-		$scope.$apply();
-	};
+		$scope.editing = function () {
+			return formService.editing();
+		}
 
-	$scope.openmodal = function (event) {
-		if ($scope.selrows.length < 1)
-			return;
-		BootstrapDialog.show({
-			title: 'Delete',
-			message: 'Are you sure you want to delete  ' + ($scope.selrows.length >= 2 ? ' these ' + $scope.selrows.length + ' entries? ' : ' this entry? '),
-			closable: false,
-			buttons: [{
-				label: '<i class="fa fa-trash"></i>&nbsp;&nbsp;Delete',
-				cssClass: 'btn-lg btn-green delete-button-delete',
-				action: function (dialogRef) {
-					$scope.delete();
-					dialogRef.close();
-				}
-			}, {
-				label: '<i class="fa fa-times"></i>&nbsp;&nbsp;Cancel',
-				cssClass: 'btn-lg btn-gray delete-button-cancel',
-				action: function (dialogRef) {
-					dialogRef.close();
-				}
-			}]
-		});
-	};
+		function initTableModel() {
+			$scope.selrows = [];
+			$('table tr').removeClass('selected');
+		};
 
-	$scope.edit = function () {
-		$scope.employeenumber = $scope.selrows[0]
-		$state.go('editEmployee', { number: $scope.employeenumber });
-	};
+		$scope.pageChanged = function (page) {
+			fetchData(page);
+		};
+
+		$scope.delete = function () {
+			//sort the No(order in table) array of checked rows.
+			$scope.selrows.sort();
+
+			for (i = $scope.selrows.length - 1; i >= 0; i--) {
+				$scope.employeeNumber = $scope.selrows[i];
+				var emp = $scope.employees.find((employee) => employee.number == $scope.employeeNumber);
+
+				EmployeeFactory.deleteEmployee(emp.number)
+					.then(function (response) {
+						dialogFactory.showDialog('Employee deleted', BootstrapDialog.TYPE_SUCCESS);
+						fetchData();
+					}, function (error) {
+						dialogFactory.showDialog('Failed to delete employee', BootstrapDialog.TYPE_DANGER);
+					});
+			}
+
+			$scope.selrows = [];
+			$scope.formMode = true;
+			$scope.$apply();
+		};
+
+		$scope.openmodal = function (event) {
+			if ($scope.selrows.length < 1)
+				return;
+			BootstrapDialog.show({
+				title: 'Delete',
+				message: 'Are you sure you want to delete  ' + ($scope.selrows.length >= 2 ? ' these ' + $scope.selrows.length + ' entries? ' : ' this entry? '),
+				closable: false,
+				type: BootstrapDialog.TYPE_DANGER,
+				buttons: [{
+					label: '<i class="fa fa-trash"></i>&nbsp;&nbsp;Delete',
+					cssClass: 'btn-lg btn-green delete-button-delete',
+					action: function (dialogRef) {
+						$scope.delete();
+						dialogRef.close();
+					}
+				}, {
+					label: '<i class="fa fa-times"></i>&nbsp;&nbsp;Cancel',
+					cssClass: 'btn-lg btn-gray delete-button-cancel',
+					action: function (dialogRef) {
+						dialogRef.close();
+					}
+				}]
+			});
+		};
+
+		$scope.edit = function () {
+			$scope.employeeNumber = $scope.selrows[0];
+			if ($scope.employeeNumber && $scope.selrows.length == 1) {
+				formService.setEditing(true);
+				$state.go('editEmployee', {
+					number: $scope.employeeNumber
+				});
+			}
+		};
 
 
-	$scope.selectRow = function (event, number) {
-    $(event.currentTarget).toggleClass('selected');
-    var index = $scope.selrows.indexOf(number);
-    
-    if (index === -1)
-      $scope.selrows.push(number);
-    else
-      $scope.selrows.splice(index, 1);
-	};
+		$scope.selectRow = function (event, number) {
+			$(event.currentTarget).toggleClass('selected');
+			var index = $scope.selrows.indexOf(number);
 
-	fetchData();
+			if (index === -1)
+				$scope.selrows.push(number);
+			else
+				$scope.selrows.splice(index, 1);
+		};
 
-	$scope.$on('update', (e, msg) => {
 		fetchData();
-	});
 
-	$scope.$on('editing', (e, msg) => {
-		$scope.addshow = msg;
-	});
-}]);
+		$scope.$on('update', (e, msg) => {
+			$scope.selrows = [];
+			fetchData();
+		});
+	}
+]);
 
-app.controller('formController', ['$scope', '$rootScope', '$state', 'EmployeeFactory', '$stateParams',
-	function ($scope, $rootScope, $state, EmployeeFactory, $stateParams) {
-  $scope.formModel = {};
-	$scope.editflag = 0;
-	$scope.designations = [{
+app.controller('formController', ['$scope', '$rootScope', '$state', 'EmployeeFactory', '$stateParams', 'formService', 'dialogFactory',
+	function ($scope, $rootScope, $state, EmployeeFactory, $stateParams, formService, dialogFactory) {
+		$scope.formModel = {};
+		$scope.editflag = 0;
+		formService.setEditing(true);
+		$scope.designations = [{
 			name: 'Consultant',
 			min: 30000,
 			max: 35000,
@@ -204,96 +236,104 @@ app.controller('formController', ['$scope', '$rootScope', '$state', 'EmployeeFac
 			min: 56000,
 			max: 80000,
 			value: 560004
-		}
-	];
+		}];
 
-	if ($stateParams.number) {
-		$scope.editflag = 1;
+		if ($stateParams.number) {
+			$scope.editflag = 1;
 
-		EmployeeFactory.getEmployee($stateParams.number)
-			.then((response) => {
-				var data = response.data;
+			EmployeeFactory.getEmployee($stateParams.number)
+				.then((response) => {
+					var data = response.data;
 
-				$scope.formModel.number = eval(data.number);
-				$scope.formModel.firstName = data.firstName;
-				$scope.formModel.lastName = data.lastName;
-				$scope.formModel.middleName = data.middleName;
-				$scope.formModel.age = eval(data.age);
+					$scope.formModel.number = eval(data.number);
+					$scope.formModel.firstName = data.firstName;
+					$scope.formModel.lastName = data.lastName;
+					$scope.formModel.middleName = data.middleName;
+					$scope.formModel.age = eval(data.age);
 
-				for (i = 0; i < $scope.designations.length; i++) {
+					for (i = 0; i < $scope.designations.length; i++) {
 
-					if ($scope.designations[i].name == data.designation) {
-						$scope.formModel.designation = $scope.designations[i];
-						$scope.formModel.salary = eval(data.salary);
+						if ($scope.designations[i].name == data.designation) {
+							$scope.formModel.designation = $scope.designations[i];
+							$scope.formModel.salary = eval(data.salary);
+						}
 					}
-				}
 
-			}, (err) => {
-				$scope.status = 'Employee not found: ' + error.message;
-			})
-	} else {
-		$scope.editflag = 0;
-	}
-
-	$rootScope.$broadcast('editing', true);
-
-  $scope.onSubmit = function () {
-		// Number is invalid
-		if ($('#submita').attr('disabled') == 'disabled')
-			return;
-
-		if ($scope.duplicated) {
-			$scope.formModel.number = '';
-			return;
+				}, (err) => {
+					$scope.status = 'Employee not found: ' + error.message;
+				})
+		} else {
+			$scope.editflag = 0;
 		}
 
-		var employeeObj = {
-			number: $scope.formModel.number,
-			firstName: $scope.formModel.firstName,
-			lastName: $scope.formModel.lastName,
-			middleName: $scope.formModel.middleName,
-			age: $scope.formModel.age,
-			designation: $scope.formModel.designation.name,
-			salary: $scope.formModel.salary
+		$rootScope.$broadcast('editing', true);
+
+		$scope.onSubmit = function () {
+			// Number is invalid
+			if ($('#submita').attr('disabled') == 'disabled')
+				return;
+
+			if ($scope.duplicated) {
+				$scope.formModel.number = '';
+				return;
+			}
+
+			var employeeObj = {
+				number: $scope.formModel.number,
+				firstName: $scope.formModel.firstName,
+				lastName: $scope.formModel.lastName,
+				middleName: $scope.formModel.middleName,
+				age: $scope.formModel.age,
+				designation: $scope.formModel.designation.name,
+				salary: $scope.formModel.salary
+			};
+
+			if ($scope.editflag == 1) {
+				
+				EmployeeFactory.updateEmployee(employeeObj.number, employeeObj)
+					.then(function (response) {
+						dialogFactory.showDialog('Employee updated', BootstrapDialog.TYPE_SUCCESS);
+					}, function (error) {
+						dialogFactory.showDialog('Failed to update employee: ' + error.message, BootstrapDialog.TYPE_DANGER);
+					});
+			} else {
+				EmployeeFactory.createEmployee(employeeObj)
+					.then(function (response) {
+						dialogFactory.showDialog('Employee added', BootstrapDialog.TYPE_SUCCESS);
+					}, function (error) {
+						dialogFactory.showDialog('Failed to create employee: ' + error.message, BootstrapDialog.TYPE_DANGER);
+					});
+			}
+
+			$rootScope.$broadcast('update', null);
+			formService.setEditing(false);
+			$state.go('employees');
 		};
 
-		if ($scope.editflag == 1) {
-			//insert.
-			EmployeeFactory.updateEmployee(employeeObj.number, employeeObj)
-        .then(function (response) {}, function (error) {
-            $scope.status = 'Unable to uodate employee data: ' + error.message;
-        });
-		} else {
-			//push.
-			EmployeeFactory.createEmployee(employeeObj)
-        .then(function (response) {}, function (error) {
-            $scope.status = 'Unable to create employee: ' + error.message;
-        });
+		$scope.cancel = function () {
+			formService.setEditing(false);
+			$state.go('employees');
 		}
 
-		$rootScope.$broadcast('update', null);
-		$state.go('employees');
-  };
+		$scope.onNumberChange = function () {
+			if ($scope.employees == null || $scope.formModel.number == '') return;
 
-	$scope.onNumberChange = function () {
-		//check duplication.\
-		if ($scope.employees == null || $scope.formModel.number == '') return;
+			for (i = 0; i < $scope.employees.length; i++) {
 
-		for (i = 0; i < $scope.employees.length; i++) {
-
-			if ($scope.employees[i].number == $scope.formModel.number) {
-				if ($scope.editflag == 1) {
-					//when add.
-					$scope.duplicated = true;
-					return;
-				} else {
-					//when edit.
-					if ($scope.employeenumber != i) {
+				if ($scope.employees[i].number == $scope.formModel.number) {
+					if ($scope.editflag == 1) {
+						//when add.
 						$scope.duplicated = true;
 						return;
+					} else {
+						//when edit.
+						if ($scope.employeeNumber != i) {
+							$scope.duplicated = true;
+							return;
+						}
 					}
 				}
 			}
 		}
 	}
-}]);
+]);
