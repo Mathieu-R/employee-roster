@@ -11,7 +11,7 @@ mongoose.connect(dbURI);
 
 Employee.insertMany(data)
   .then(() => {
-    process.stderr.write('Employees created...\n');
+    process.stdout.write('Employees created...\n');
     process.exit(0);
   })
   .catch(() => {
